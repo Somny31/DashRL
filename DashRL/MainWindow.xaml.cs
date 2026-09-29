@@ -31,11 +31,9 @@ public partial class MainWindow : Window
         Loaded += MainWindow_Loaded;
 
         UpdateSessionDisplay();
-    }
 
-    // =========================================================
-    // CONNEXION ROCKET LEAGUE
-    // =========================================================
+        ShowDashboardPage();
+    }
 
     private async void MainWindow_Loaded(
         object sender,
@@ -62,30 +60,132 @@ public partial class MainWindow : Window
         }
     }
 
-    // =========================================================
-    // BOUTON OVERLAY
-    // =========================================================
+    // ================================================================
+    // NAVIGATION
+    // ================================================================
+
+    private void DashboardButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        ShowDashboardPage();
+    }
 
     private void OverlayButton_Click(
         object sender,
         RoutedEventArgs e)
     {
+        ShowOverlayPage();
+    }
+
+    private void ShowDashboardPage()
+    {
+        DashboardPage.Visibility =
+            Visibility.Visible;
+
+        OverlayPage.Visibility =
+            Visibility.Collapsed;
+
+        SetNavigationButtonState(
+            DashboardButton,
+            true
+        );
+
+        SetNavigationButtonState(
+            OverlayButton,
+            false
+        );
+    }
+
+    private void ShowOverlayPage()
+    {
+        DashboardPage.Visibility =
+            Visibility.Collapsed;
+
+        OverlayPage.Visibility =
+            Visibility.Visible;
+
+        SetNavigationButtonState(
+            DashboardButton,
+            false
+        );
+
+        SetNavigationButtonState(
+            OverlayButton,
+            true
+        );
+
+        UpdateOverlayPreview();
+        UpdateOverlayControls();
+    }
+
+    private static void SetNavigationButtonState(
+        System.Windows.Controls.Button button,
+        bool active)
+    {
+        if (active)
+        {
+            button.Background =
+                new SolidColorBrush(
+                    Color.FromRgb(
+                        32,
+                        38,
+                        50
+                    )
+                );
+
+            button.Foreground =
+                Brushes.White;
+        }
+        else
+        {
+            button.Background =
+                Brushes.Transparent;
+
+            button.Foreground =
+                new SolidColorBrush(
+                    Color.FromRgb(
+                        146,
+                        153,
+                        168
+                    )
+                );
+        }
+    }
+
+    // ================================================================
+    // OVERLAY
+    // ================================================================
+
+    private void ToggleOverlayButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
         if (_overlayWindow != null)
         {
-            if (_overlayWindow.IsVisible)
-            {
-                _overlayWindow.Activate();
-                return;
-            }
+            _overlayWindow.Close();
+            return;
         }
 
+        OpenOverlay();
+    }
+
+    private void OpenOverlay()
+    {
+        if (_overlayWindow != null)
+            return;
+
         _overlayWindow =
-            new OverlayWindow(_sessionTracker);
+            new OverlayWindow(
+                _sessionTracker
+            );
 
         _overlayWindow.Closed +=
             OverlayWindow_Closed;
 
         _overlayWindow.Show();
+
+        UpdateOverlayControls();
     }
 
     private void OverlayWindow_Closed(
@@ -93,11 +193,78 @@ public partial class MainWindow : Window
         EventArgs e)
     {
         _overlayWindow = null;
+
+        UpdateOverlayControls();
     }
 
-    // =========================================================
-    // CHANGEMENT SESSION
-    // =========================================================
+    private void UpdateOverlayControls()
+    {
+        if (_overlayWindow != null)
+        {
+            ToggleOverlayButton.Content =
+                "Masquer l'overlay";
+
+            OverlayStatusText.Text =
+                "L'overlay est actuellement affiché";
+
+            OverlayStatusText.Foreground =
+                Brushes.LimeGreen;
+        }
+        else
+        {
+            ToggleOverlayButton.Content =
+                "Afficher l'overlay";
+
+            OverlayStatusText.Text =
+                "L'overlay est actuellement désactivé";
+
+            OverlayStatusText.Foreground =
+                new SolidColorBrush(
+                    Color.FromRgb(
+                        115,
+                        122,
+                        137
+                    )
+                );
+        }
+    }
+
+    private void UpdateOverlayPreview()
+    {
+        PreviewWins.Text =
+            $"{_sessionTracker.Wins} W";
+
+        PreviewLosses.Text =
+            $"{_sessionTracker.Losses} L";
+
+        if (_sessionTracker.Streak > 0)
+        {
+            PreviewStreak.Text =
+                $"+{_sessionTracker.Streak}";
+
+            PreviewStreak.Foreground =
+                Brushes.LimeGreen;
+        }
+        else if (_sessionTracker.Streak < 0)
+        {
+            PreviewStreak.Text =
+                _sessionTracker.Streak.ToString();
+
+            PreviewStreak.Foreground =
+                Brushes.IndianRed;
+        }
+        else
+        {
+            PreviewStreak.Text = "0";
+
+            PreviewStreak.Foreground =
+                Brushes.White;
+        }
+    }
+
+    // ================================================================
+    // SESSION
+    // ================================================================
 
     private void OnSessionChanged()
     {
@@ -105,13 +272,15 @@ public partial class MainWindow : Window
         {
             UpdateSessionDisplay();
 
+            UpdateOverlayPreview();
+
             _overlayWindow?.UpdateSession();
         });
     }
 
-    // =========================================================
-    // RÉCEPTION ROCKET LEAGUE
-    // =========================================================
+    // ================================================================
+    // ROCKET LEAGUE
+    // ================================================================
 
     private void OnRocketLeagueMessage(
         string message)
@@ -131,10 +300,6 @@ public partial class MainWindow : Window
             UpdateSessionTracker(match);
         });
     }
-
-    // =========================================================
-    // DASHBOARD MATCH
-    // =========================================================
 
     private void UpdateMatchDisplay(
         MatchState match)
@@ -168,10 +333,6 @@ public partial class MainWindow : Window
                 $"{blueTeam.Score} - {orangeTeam.Score}";
         }
 
-        // -----------------------------------------------------
-        // CHRONOMÈTRE
-        // -----------------------------------------------------
-
         int totalSeconds =
             match.Game.TimeSeconds;
 
@@ -183,10 +344,6 @@ public partial class MainWindow : Window
 
         TimeText.Text =
             $"{minutes:00}:{seconds:00}";
-
-        // -----------------------------------------------------
-        // JOUEUR
-        // -----------------------------------------------------
 
         Player? player = null;
 
@@ -237,10 +394,6 @@ public partial class MainWindow : Window
         PlayerBoost.Text =
             $"{player.Boost}%";
     }
-
-    // =========================================================
-    // DÉTECTION WIN / LOSS
-    // =========================================================
 
     private void UpdateSessionTracker(
         MatchState match)
@@ -311,10 +464,6 @@ public partial class MainWindow : Window
             _sessionTracker.AddLoss();
         }
     }
-
-    // =========================================================
-    // AFFICHAGE SESSION DASHBOARD
-    // =========================================================
 
     private void UpdateSessionDisplay()
     {

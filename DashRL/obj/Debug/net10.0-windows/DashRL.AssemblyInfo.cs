@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DashRL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d2e4e582ae7eb6cec80cd8b12d0d7facb10d147")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7fe4cc1d2042025800c008fc15e0c7ed99d6766d")]
 [assembly: System.Reflection.AssemblyProductAttribute("DashRL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DashRL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
