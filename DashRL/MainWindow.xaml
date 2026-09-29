@@ -1,0 +1,97 @@
+﻿<Window x:Class="DashRL.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DashRL"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="30">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titre -->
+        <TextBlock
+            Grid.Row="0"
+            Text="DashRL"
+            FontSize="32"
+            FontWeight="Bold"/>
+
+        <!-- Connexion -->
+        <TextBlock
+            Grid.Row="1"
+            x:Name="ConnectionStatus"
+            Text="Connexion à Rocket League..."
+            FontSize="16"
+            Margin="0,5,0,40"/>
+
+        <!-- Match -->
+        <StackPanel
+            Grid.Row="2"
+            HorizontalAlignment="Center">
+
+            <StackPanel Orientation="Horizontal">
+
+                <TextBlock
+                    x:Name="BlueTeamName"
+                    Text="BLEU"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Width="180"
+                    TextAlignment="Right"/>
+
+                <TextBlock
+                    x:Name="ScoreText"
+                    Text="0 - 0"
+                    FontSize="32"
+                    FontWeight="Bold"
+                    Width="150"
+                    TextAlignment="Center"/>
+
+                <TextBlock
+                    x:Name="OrangeTeamName"
+                    Text="ORANGE"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Width="180"/>
+
+            </StackPanel>
+
+            <TextBlock
+                x:Name="TimeText"
+                Text="00:00"
+                FontSize="24"
+                HorizontalAlignment="Center"
+                Margin="0,10,0,40"/>
+
+        </StackPanel>
+
+        <!-- Joueur -->
+        <StackPanel
+            Grid.Row="3"
+            Width="400"
+            HorizontalAlignment="Center">
+
+            <TextBlock
+                x:Name="PlayerName"
+                Text="En attente d'un joueur..."
+                FontSize="24"
+                FontWeight="Bold"
+                Margin="0,0,0,20"/>
+
+            <TextBlock x:Name="PlayerScore" FontSize="18"/>
+            <TextBlock x:Name="PlayerGoals" FontSize="18"/>
+            <TextBlock x:Name="PlayerShots" FontSize="18"/>
+            <TextBlock x:Name="PlayerAssists" FontSize="18"/>
+            <TextBlock x:Name="PlayerSaves" FontSize="18"/>
+            <TextBlock x:Name="PlayerBoost" FontSize="18"/>
+
+        </StackPanel>
+
+    </Grid>
+</Window>
