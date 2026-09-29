@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using DashRL.Models;
 using DashRL.RocketLeague;
+using DashRL.Services;
 
 namespace DashRL;
 
@@ -11,36 +12,114 @@ public partial class MainWindow : Window
 {
     private readonly RocketLeagueClient _rocketLeagueClient = new();
 
+    private readonly SessionTracker _sessionTracker = new();
+
+    private OverlayWindow? _overlayWindow;
+
+    private string? _lastCountedMatchGuid;
+
     public MainWindow()
     {
         InitializeComponent();
 
-        _rocketLeagueClient.MessageReceived += OnRocketLeagueMessage;
+        _rocketLeagueClient.MessageReceived +=
+            OnRocketLeagueMessage;
+
+        _sessionTracker.SessionChanged +=
+            OnSessionChanged;
 
         Loaded += MainWindow_Loaded;
+
+        UpdateSessionDisplay();
     }
+
+    // =========================================================
+    // CONNEXION ROCKET LEAGUE
+    // =========================================================
 
     private async void MainWindow_Loaded(
         object sender,
         RoutedEventArgs e)
     {
-        bool connected = await _rocketLeagueClient.ConnectAsync();
+        bool connected =
+            await _rocketLeagueClient.ConnectAsync();
 
         if (connected)
         {
-            ConnectionStatus.Text = "● Connecté à Rocket League";
-            ConnectionStatus.Foreground = Brushes.Green;
+            ConnectionStatus.Text =
+                "● Connecté à Rocket League";
+
+            ConnectionStatus.Foreground =
+                Brushes.LimeGreen;
         }
         else
         {
-            ConnectionStatus.Text = "● Rocket League non connecté";
-            ConnectionStatus.Foreground = Brushes.Red;
+            ConnectionStatus.Text =
+                "● Rocket League non connecté";
+
+            ConnectionStatus.Foreground =
+                Brushes.Red;
         }
     }
 
-    private void OnRocketLeagueMessage(string message)
+    // =========================================================
+    // BOUTON OVERLAY
+    // =========================================================
+
+    private void OverlayButton_Click(
+        object sender,
+        RoutedEventArgs e)
     {
-        MatchState? match = RocketLeagueParser.ParseMatchState(message);
+        if (_overlayWindow != null)
+        {
+            if (_overlayWindow.IsVisible)
+            {
+                _overlayWindow.Activate();
+                return;
+            }
+        }
+
+        _overlayWindow =
+            new OverlayWindow(_sessionTracker);
+
+        _overlayWindow.Closed +=
+            OverlayWindow_Closed;
+
+        _overlayWindow.Show();
+    }
+
+    private void OverlayWindow_Closed(
+        object? sender,
+        EventArgs e)
+    {
+        _overlayWindow = null;
+    }
+
+    // =========================================================
+    // CHANGEMENT SESSION
+    // =========================================================
+
+    private void OnSessionChanged()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            UpdateSessionDisplay();
+
+            _overlayWindow?.UpdateSession();
+        });
+    }
+
+    // =========================================================
+    // RÉCEPTION ROCKET LEAGUE
+    // =========================================================
+
+    private void OnRocketLeagueMessage(
+        string message)
+    {
+        MatchState? match =
+            RocketLeagueParser.ParseMatchState(
+                message
+            );
 
         if (match == null)
             return;
@@ -48,89 +127,228 @@ public partial class MainWindow : Window
         Dispatcher.Invoke(() =>
         {
             UpdateMatchDisplay(match);
+
+            UpdateSessionTracker(match);
         });
     }
 
-    private void UpdateMatchDisplay(MatchState match)
+    // =========================================================
+    // DASHBOARD MATCH
+    // =========================================================
+
+    private void UpdateMatchDisplay(
+        MatchState match)
     {
-        // -------------------------
-        // Équipes
-        // -------------------------
+        Team? blueTeam =
+            match.Game.Teams.FirstOrDefault(
+                team => team.TeamNum == 0
+            );
 
-        Team? blueTeam = match.Game.Teams
-            .FirstOrDefault(team => team.TeamNum == 0);
-
-        Team? orangeTeam = match.Game.Teams
-            .FirstOrDefault(team => team.TeamNum == 1);
+        Team? orangeTeam =
+            match.Game.Teams.FirstOrDefault(
+                team => team.TeamNum == 1
+            );
 
         if (blueTeam != null)
-            BlueTeamName.Text = blueTeam.Name;
+        {
+            BlueTeamName.Text =
+                blueTeam.Name;
+        }
 
         if (orangeTeam != null)
-            OrangeTeamName.Text = orangeTeam.Name;
+        {
+            OrangeTeamName.Text =
+                orangeTeam.Name;
+        }
 
-        if (blueTeam != null && orangeTeam != null)
+        if (blueTeam != null &&
+            orangeTeam != null)
         {
             ScoreText.Text =
                 $"{blueTeam.Score} - {orangeTeam.Score}";
         }
 
-        // -------------------------
-        // Chronomètre
-        // -------------------------
+        // -----------------------------------------------------
+        // CHRONOMÈTRE
+        // -----------------------------------------------------
 
-        int totalSeconds = match.Game.TimeSeconds;
+        int totalSeconds =
+            match.Game.TimeSeconds;
 
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
+        int minutes =
+            totalSeconds / 60;
 
-        TimeText.Text = $"{minutes:00}:{seconds:00}";
+        int seconds =
+            totalSeconds % 60;
 
-        // -------------------------
-        // Joueur
-        // -------------------------
+        TimeText.Text =
+            $"{minutes:00}:{seconds:00}";
+
+        // -----------------------------------------------------
+        // JOUEUR
+        // -----------------------------------------------------
 
         Player? player = null;
 
-if (match.Game.bHasTarget && match.Game.Target != null)
-{
-    player = match.Players.FirstOrDefault(p =>
-        p.Shortcut == match.Game.Target.Shortcut
-    );
-}
+        if (match.Game.bHasTarget &&
+            match.Game.Target != null)
+        {
+            player =
+                match.Players.FirstOrDefault(
+                    p =>
+                        p.Shortcut ==
+                        match.Game.Target.Shortcut
+                );
+        }
 
-if (player == null)
-{
-    PlayerName.Text = "Aucun joueur ciblé";
+        if (player == null)
+        {
+            PlayerName.Text =
+                "Aucun joueur ciblé";
 
-    PlayerScore.Text = "";
-    PlayerGoals.Text = "";
-    PlayerShots.Text = "";
-    PlayerAssists.Text = "";
-    PlayerSaves.Text = "";
-    PlayerBoost.Text = "";
+            PlayerScore.Text = "—";
+            PlayerGoals.Text = "—";
+            PlayerShots.Text = "—";
+            PlayerAssists.Text = "—";
+            PlayerSaves.Text = "—";
+            PlayerBoost.Text = "—";
 
-    return;
-}
+            return;
+        }
 
-        PlayerName.Text = player.Name;
+        PlayerName.Text =
+            player.Name;
 
         PlayerScore.Text =
-            $"Score : {player.Score}";
+            player.Score.ToString();
 
         PlayerGoals.Text =
-            $"Buts : {player.Goals}";
+            player.Goals.ToString();
 
         PlayerShots.Text =
-            $"Tirs : {player.Shots}";
+            player.Shots.ToString();
 
         PlayerAssists.Text =
-            $"Passes : {player.Assists}";
+            player.Assists.ToString();
 
         PlayerSaves.Text =
-            $"Arrêts : {player.Saves}";
+            player.Saves.ToString();
 
         PlayerBoost.Text =
-            $"Boost : {player.Boost}%";
+            $"{player.Boost}%";
+    }
+
+    // =========================================================
+    // DÉTECTION WIN / LOSS
+    // =========================================================
+
+    private void UpdateSessionTracker(
+        MatchState match)
+    {
+        if (!match.Game.bHasWinner)
+            return;
+
+        if (string.IsNullOrWhiteSpace(
+            match.MatchGuid))
+        {
+            return;
+        }
+
+        if (_lastCountedMatchGuid ==
+            match.MatchGuid)
+        {
+            return;
+        }
+
+        if (!match.Game.bHasTarget ||
+            match.Game.Target == null)
+        {
+            return;
+        }
+
+        Player? player =
+            match.Players.FirstOrDefault(
+                p =>
+                    p.Shortcut ==
+                    match.Game.Target.Shortcut
+            );
+
+        if (player == null)
+            return;
+
+        Team? playerTeam =
+            match.Game.Teams.FirstOrDefault(
+                team =>
+                    team.TeamNum ==
+                    player.TeamNum
+            );
+
+        if (playerTeam == null)
+            return;
+
+        if (string.IsNullOrWhiteSpace(
+            match.Game.Winner))
+        {
+            return;
+        }
+
+        _lastCountedMatchGuid =
+            match.MatchGuid;
+
+        bool isWin =
+            string.Equals(
+                playerTeam.Name,
+                match.Game.Winner,
+                StringComparison.OrdinalIgnoreCase
+            );
+
+        if (isWin)
+        {
+            _sessionTracker.AddWin();
+        }
+        else
+        {
+            _sessionTracker.AddLoss();
+        }
+    }
+
+    // =========================================================
+    // AFFICHAGE SESSION DASHBOARD
+    // =========================================================
+
+    private void UpdateSessionDisplay()
+    {
+        SessionWins.Text =
+            _sessionTracker.Wins.ToString();
+
+        SessionLosses.Text =
+            _sessionTracker.Losses.ToString();
+
+        if (_sessionTracker.Streak > 0)
+        {
+            SessionStreak.Text =
+                $"+{_sessionTracker.Streak}";
+
+            SessionStreak.Foreground =
+                Brushes.LimeGreen;
+
+            return;
+        }
+
+        if (_sessionTracker.Streak < 0)
+        {
+            SessionStreak.Text =
+                _sessionTracker.Streak.ToString();
+
+            SessionStreak.Foreground =
+                Brushes.IndianRed;
+
+            return;
+        }
+
+        SessionStreak.Text = "0";
+
+        SessionStreak.Foreground =
+            Brushes.White;
     }
 }

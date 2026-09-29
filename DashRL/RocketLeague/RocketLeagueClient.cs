@@ -81,8 +81,16 @@ public class RocketLeagueClient
                 string message = Encoding.UTF8.GetString(
                     messageStream.ToArray()
                 );
+                if (message.Contains("\"bHasWinner\":true") ||
+    message.Contains("\\\"bHasWinner\\\":true"))
+{
+    File.AppendAllText(
+        "match_end_log.txt",
+        message + Environment.NewLine
+    );
+}
 
-                MessageReceived?.Invoke(message);
+MessageReceived?.Invoke(message);
             }
         }
         catch (Exception ex)
