@@ -1,5 +1,5 @@
-bin/
-bin/Debug/
-obj/
-Installer/
-.vs/
+DashRL/bin/
+DashRL/obj/
+DashRL/Installer/
+DashRL/.vs/
+

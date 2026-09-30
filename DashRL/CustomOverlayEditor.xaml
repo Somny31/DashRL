@@ -149,6 +149,188 @@
 
         </Style>
 
+        <Style x:Key="LayerButtonStyle"
+       TargetType="Button">
+
+    <Setter Property="Height"
+            Value="56"/>
+
+    <Setter Property="MinWidth"
+            Value="120"/>
+
+    <Setter Property="Margin"
+            Value="0,0,8,0"/>
+
+    <Setter Property="Padding"
+            Value="12,0"/>
+
+    <Setter Property="Background"
+            Value="#11141B"/>
+
+    <Setter Property="Foreground"
+            Value="#E8EAF0"/>
+
+    <Setter Property="BorderBrush"
+            Value="#292E39"/>
+
+    <Setter Property="BorderThickness"
+            Value="1"/>
+
+    <Setter Property="Cursor"
+            Value="Hand"/>
+
+    <Setter Property="Template">
+
+        <Setter.Value>
+
+            <ControlTemplate TargetType="Button">
+
+                <Border
+                    x:Name="LayerBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="6">
+
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"/>
+
+                </Border>
+
+
+                <ControlTemplate.Triggers>
+
+                    <Trigger
+                        Property="IsMouseOver"
+                        Value="True">
+
+                        <Setter
+                            TargetName="LayerBorder"
+                            Property="Background"
+                            Value="#171A22"/>
+
+                        <Setter
+                            TargetName="LayerBorder"
+                            Property="BorderBrush"
+                            Value="#464D60"/>
+
+                    </Trigger>
+
+                </ControlTemplate.Triggers>
+
+            </ControlTemplate>
+
+        </Setter.Value>
+
+    </Setter>
+
+</Style>
+    
+        <!-- Scrollbar discrète pour la section CALQUES -->
+        <Style x:Key="LayersScrollBarThumbStyle" TargetType="Thumb">
+            <Setter Property="MinWidth" Value="34"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Thumb">
+                        <Border x:Name="ThumbBorder"
+                                Height="5"
+                                CornerRadius="3"
+                                Background="#343A48">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="MouseOver">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ThumbBorder"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#596173"
+                                                            Duration="0:0:0.12"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="ThumbBorder"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                            To="#7C6CFF"
+                                                            Duration="0:0:0.08"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LayersHorizontalScrollBarStyle" TargetType="ScrollBar">
+            <Setter Property="Height" Value="7"/>
+            <Setter Property="Margin" Value="16,0,16,7"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Height="7" Background="Transparent">
+                            <Border Height="5"
+                                    VerticalAlignment="Center"
+                                    CornerRadius="3"
+                                    Background="#151922"/>
+                            <Track x:Name="PART_Track"
+                                   IsDirectionReversed="False"
+                                   Orientation="Horizontal">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageLeftCommand"
+                                                  Opacity="0"
+                                                  Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource LayersScrollBarThumbStyle}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageRightCommand"
+                                                  Opacity="0"
+                                                  Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LayersScrollViewerStyle" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Grid Background="Transparent">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                                    Grid.Row="0"
+                                                    CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                    Content="{TemplateBinding Content}"
+                                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                    Margin="{TemplateBinding Padding}"/>
+                            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                       Grid.Row="1"
+                                       Orientation="Horizontal"
+                                       Minimum="0"
+                                       Maximum="{TemplateBinding ScrollableWidth}"
+                                       ViewportSize="{TemplateBinding ViewportWidth}"
+                                       Value="{Binding HorizontalOffset,
+                                                       RelativeSource={RelativeSource TemplatedParent},
+                                                       Mode=OneWay}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                       Style="{StaticResource LayersHorizontalScrollBarStyle}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
 
 
@@ -207,12 +389,14 @@
                     VerticalAlignment="Center">
 
                     <Button
+                        x:Name="PreviewButton"
                         Content="Preview"
                         Width="90"
                         Margin="0,0,8,0"
                         Style="{StaticResource EditorButtonStyle}"/>
 
                     <Button
+                        x:Name="SaveButton"
                         Content="Save"
                         Width="90"
                         Style="{StaticResource PrimaryEditorButtonStyle}"/>
@@ -372,11 +556,11 @@
 
                 </StackPanel>
 
-            </Border>
+                        </Border>
 
 
             <!-- ================================================== -->
-            <!-- CANVAS -->
+            <!-- CENTER : LAYERS + CANVAS -->
             <!-- ================================================== -->
 
             <Grid Grid.Column="1"
@@ -386,70 +570,218 @@
 
                     <RowDefinition Height="42"/>
 
+                    <RowDefinition Height="120"/>
+
                     <RowDefinition Height="*"/>
 
                 </Grid.RowDefinitions>
 
 
-                <Border
-                    Grid.Row="0"
-                    BorderBrush="#1D212B"
-                    BorderThickness="0,0,0,1">
+<!-- ================================================== -->
+<!-- LAYERS HEADER -->
+<!-- ================================================== -->
 
-                    <Grid Margin="16,0">
+<Border
+    Grid.Row="0"
+    BorderBrush="#1D212B"
+    BorderThickness="0,0,0,1">
 
-                        <TextBlock
-                            Text="CANVAS"
-                            Foreground="#737A89"
-                            FontSize="10"
-                            FontWeight="Bold"
-                            VerticalAlignment="Center"/>
+    <Grid Margin="16,0">
 
-                    </Grid>
+        <TextBlock
+            Text="CALQUES"
+            Foreground="#737A89"
+            FontSize="10"
+            FontWeight="Bold"
+            VerticalAlignment="Center"/>
 
-                </Border>
+    </Grid>
+
+</Border>
 
 
-                <Grid Grid.Row="1">
+<!-- ================================================== -->
+<!-- LAYERS -->
+<!-- ================================================== -->
 
-                    <!-- Fond de la zone de travail -->
-                    <Border
-                        Width="560"
-                        Height="300"
-                        Background="#0F1218"
-                        BorderBrush="#292E39"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+<Border
+    Grid.Row="1"
+    Background="#0D0F14"
+    BorderBrush="#1D212B"
+    BorderThickness="0,0,0,1">
 
-                        <Grid>
+    <ScrollViewer
+        Style="{StaticResource LayersScrollViewerStyle}"
+        HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Disabled"
+        PanningMode="HorizontalOnly"
+        CanContentScroll="False">
 
-                            <!--
-                                Ce Canvas recevra les éléments
-                                du Custom Overlay.
-                            -->
+        <StackPanel
+            x:Name="LayersPanel"
+            Orientation="Horizontal"
+            Margin="16,12,24,12"/>
 
-                            <Canvas
-                                x:Name="OverlayCanvas"
-                                Width="500"
-                                Height="150"
-                                Background="#08000000"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+    </ScrollViewer>
+
+</Border>
+
+
+<!-- ================================================== -->
+<!-- CANVAS -->
+<!-- ================================================== -->
+
+                <Grid Grid.Row="2"
+                      Background="#0A0C11">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="48"/>
+                    </Grid.RowDefinitions>
+
+                    <!--
+                        Zone de travail façon Canva :
+                        - sa taille ne dépend jamais du canvas
+                        - elle masque tout ce qui dépasse
+                        - le canvas conserve sa vraie taille logique
+                        - seul son affichage est zoomé/dézoomé
+                    -->
+                    <Border Grid.Row="0"
+                            Margin="24,20,24,12"
+                            Background="#0F1218"
+                            BorderBrush="#292E39"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            ClipToBounds="True">
+
+                        <Grid x:Name="CanvasViewport"
+                              Background="#0F1218"
+                              SizeChanged="CanvasViewport_SizeChanged">
+
+                            <ScrollViewer x:Name="CanvasScrollViewer"
+                                          HorizontalScrollBarVisibility="Auto"
+                                          VerticalScrollBarVisibility="Auto"
+                                          CanContentScroll="False"
+                                          PanningMode="Both"
+                                          Background="Transparent">
+
+                                <Grid x:Name="CanvasCenterHost"
+                                      Margin="48"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center">
+
+                                    <Grid.LayoutTransform>
+                                        <ScaleTransform x:Name="CanvasScaleTransform"
+                                                        ScaleX="1"
+                                                        ScaleY="1"/>
+                                    </Grid.LayoutTransform>
+
+                                    <!-- Ombre/page -->
+                                    <Border Background="#10131A"
+                                            BorderBrush="#343A47"
+                                            BorderThickness="1"
+                                            CornerRadius="2">
+
+                                        <Canvas x:Name="OverlayCanvas"
+                                                Width="400"
+                                                Height="150"
+                                                Background="#08000000"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                            </ScrollViewer>
 
                         </Grid>
 
                     </Border>
 
 
-                    <TextBlock
-                        Text="500 × 150"
-                        Foreground="#555C6A"
-                        FontSize="10"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Margin="0,205,0,0"/>
+                    <!-- Barre inférieure comme un éditeur graphique -->
+                    <Border Grid.Row="1"
+                            Background="#0D0F14"
+                            BorderBrush="#1D212B"
+                            BorderThickness="0,1,0,0">
+
+                        <Grid Margin="18,0">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock x:Name="CanvasSizeText"
+                                       Grid.Column="0"
+                                       Text="400 × 150"
+                                       Foreground="#737A89"
+                                       FontSize="10"
+                                       VerticalAlignment="Center"/>
+
+                            <StackPanel Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center">
+
+                                <Button x:Name="CanvasZoomOutButton"
+                                        Content="−"
+                                        Width="30"
+                                        Height="28"
+                                        Margin="0,0,7,0"
+                                        Background="#171A22"
+                                        Foreground="#D8DBE2"
+                                        BorderBrush="#303644"
+                                        BorderThickness="1"
+                                        Cursor="Hand"
+                                        Click="CanvasZoomOutButton_Click"/>
+
+                                <Slider x:Name="CanvasZoomSlider"
+                                        Width="145"
+                                        Minimum="10"
+                                        Maximum="200"
+                                        Value="100"
+                                        TickFrequency="5"
+                                        IsSnapToTickEnabled="False"
+                                        VerticalAlignment="Center"
+                                        ValueChanged="CanvasZoomSlider_ValueChanged"/>
+
+                                <TextBlock x:Name="CanvasZoomText"
+                                           Width="46"
+                                           Text="100%"
+                                           Foreground="#AEB4C2"
+                                           FontSize="11"
+                                           TextAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="7,0,7,0"/>
+
+                                <Button x:Name="CanvasZoomInButton"
+                                        Content="+"
+                                        Width="30"
+                                        Height="28"
+                                        Margin="0,0,7,0"
+                                        Background="#171A22"
+                                        Foreground="#D8DBE2"
+                                        BorderBrush="#303644"
+                                        BorderThickness="1"
+                                        Cursor="Hand"
+                                        Click="CanvasZoomInButton_Click"/>
+
+                                <Button x:Name="CanvasFitButton"
+                                        Content="Fit"
+                                        Height="28"
+                                        Padding="11,0"
+                                        Background="#171A22"
+                                        Foreground="#D8DBE2"
+                                        BorderBrush="#303644"
+                                        BorderThickness="1"
+                                        Cursor="Hand"
+                                        Click="CanvasFitButton_Click"/>
+
+                            </StackPanel>
+
+                        </Grid>
+
+                    </Border>
 
                 </Grid>
 
@@ -483,6 +815,33 @@
                         FontSize="12"
                         Margin="0,0,0,20"/>
 
+
+                    <!-- CANVAS SIZE -->
+
+                    <TextBlock
+                        Text="Canvas size"
+                        Foreground="#737A89"
+                        FontSize="10"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,8"/>
+
+                    <Grid Margin="0,0,0,18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Width" Foreground="#555C6A" FontSize="9" Margin="1,0,0,4"/>
+                            <TextBox x:Name="CanvasWidthTextBox" Text="500" LostFocus="CanvasSizeTextBox_LostFocus" KeyDown="CanvasSizeTextBox_KeyDown"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Height" Foreground="#555C6A" FontSize="9" Margin="1,0,0,4"/>
+                            <TextBox x:Name="CanvasHeightTextBox" Text="150" LostFocus="CanvasSizeTextBox_LostFocus" KeyDown="CanvasSizeTextBox_KeyDown"/>
+                        </StackPanel>
+                    </Grid>
 
                     <!-- POSITION -->
 
@@ -636,18 +995,144 @@
 
                     <StackPanel x:Name="TextColorPropertyPanel">
 
-    <TextBlock
-        Text="Text color"
-        Foreground="#737A89"
-        FontSize="10"
-        FontWeight="SemiBold"
-        Margin="0,18,0,8"/>
+                        <TextBlock
+                            Text="Text color"
+                            Foreground="#737A89"
+                            FontSize="10"
+                            FontWeight="SemiBold"
+                            Margin="0,18,0,8"/>
 
-    <TextBox
-        x:Name="TextColorTextBox"
-        Text="#FFFFFF"/>
+                        <TextBox
+                            x:Name="TextColorTextBox"
+                            Text="#FFFFFF"
+                            Margin="0,0,0,9"/>
 
-</StackPanel>
+                        <UniformGrid Columns="6"
+                                     Margin="0,0,0,2">
+
+                            <Button Tag="#FFFFFF"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#FFFFFF"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="White"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#D7DBE4"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#D7DBE4"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Light gray"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#8B93A5"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#8B93A5"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Gray"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#11141B"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#11141B"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Dark"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#72D69A"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#72D69A"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Green"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#E87979"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#E87979"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Red"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#A89CFF"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#A89CFF"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Purple"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#7C6CFF"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#7C6CFF"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="DashRL"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#5FB3FF"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#5FB3FF"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Blue"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#58D5D3"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#58D5D3"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Cyan"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#F2C66D"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#F2C66D"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Yellow"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                            <Button Tag="#F39A62"
+                                    Height="25"
+                                    Margin="2"
+                                    Background="#F39A62"
+                                    BorderBrush="#4A5060"
+                                    BorderThickness="1"
+                                    Cursor="Hand"
+                                    ToolTip="Orange"
+                                    Click="TextColorPaletteButton_Click"/>
+
+                        </UniformGrid>
+
+                    </StackPanel>
 
 
                     <TextBlock
@@ -659,7 +1144,136 @@
 
                     <TextBox
                         x:Name="BackgroundColorTextBox"
-                        Text="#00000000"/>
+                        Text="#00000000"
+                        Margin="0,0,0,9"/>
+
+                    <UniformGrid Columns="6">
+
+                        <Button Tag="#00000000"
+                                Content="Ø"
+                                Height="25"
+                                Margin="2"
+                                Background="#171A22"
+                                Foreground="#AEB4C2"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Cursor="Hand"
+                                ToolTip="Transparent"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#FFFFFF"
+                                Height="25"
+                                Margin="2"
+                                Background="#FFFFFF"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="White"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#D7DBE4"
+                                Height="25"
+                                Margin="2"
+                                Background="#D7DBE4"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Light gray"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#11141B"
+                                Height="25"
+                                Margin="2"
+                                Background="#11141B"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Dark"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#CC11141B"
+                                Height="25"
+                                Margin="2"
+                                Background="#CC11141B"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Dark 80%"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#7C6CFF"
+                                Height="25"
+                                Margin="2"
+                                Background="#7C6CFF"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="DashRL"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#72D69A"
+                                Height="25"
+                                Margin="2"
+                                Background="#72D69A"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Green"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#E87979"
+                                Height="25"
+                                Margin="2"
+                                Background="#E87979"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Red"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#A89CFF"
+                                Height="25"
+                                Margin="2"
+                                Background="#A89CFF"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Purple"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#5FB3FF"
+                                Height="25"
+                                Margin="2"
+                                Background="#5FB3FF"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Blue"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#58D5D3"
+                                Height="25"
+                                Margin="2"
+                                Background="#58D5D3"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Cyan"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                        <Button Tag="#F2C66D"
+                                Height="25"
+                                Margin="2"
+                                Background="#F2C66D"
+                                BorderBrush="#4A5060"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                ToolTip="Yellow"
+                                Click="BackgroundColorPaletteButton_Click"/>
+
+                    </UniformGrid>
 
                 </StackPanel>
 

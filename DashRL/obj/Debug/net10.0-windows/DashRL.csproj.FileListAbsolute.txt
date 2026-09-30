@@ -3,8 +3,12 @@ B:\DashRL\DashRL\bin\Debug\net10.0-windows\DashRL.deps.json
 B:\DashRL\DashRL\bin\Debug\net10.0-windows\DashRL.runtimeconfig.json
 B:\DashRL\DashRL\bin\Debug\net10.0-windows\DashRL.dll
 B:\DashRL\DashRL\bin\Debug\net10.0-windows\DashRL.pdb
+B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayEditor.baml
+B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayPreviewWindow.baml
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\MainWindow.baml
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\OverlayWindow.baml
+B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayEditor.g.cs
+B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayPreviewWindow.g.cs
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\MainWindow.g.cs
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\OverlayWindow.g.cs
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\App.g.cs
@@ -20,5 +24,3 @@ B:\DashRL\DashRL\obj\Debug\net10.0-windows\refint\DashRL.dll
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\DashRL.pdb
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\DashRL.genruntimeconfig.cache
 B:\DashRL\DashRL\obj\Debug\net10.0-windows\ref\DashRL.dll
-B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayEditor.baml
-B:\DashRL\DashRL\obj\Debug\net10.0-windows\CustomOverlayEditor.g.cs

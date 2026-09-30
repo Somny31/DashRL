@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -17,6 +19,7 @@ public partial class OverlayWindow : Window
     private readonly DispatcherTimer _rocketLeagueWindowTimer;
 
     private string _overlayStyle;
+    private CustomOverlay? _customOverlay;
     private bool _overlayVisible;
     private Rect? _lastRocketLeagueMonitor;
 
@@ -37,17 +40,51 @@ public partial class OverlayWindow : Window
         int dwNewLong
     );
 
+    private const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(
+        IntPtr hwnd,
+        uint dwFlags
+    );
+
+    [DllImport("user32.dll", CharSet = CharSet.Auto)]
+    private static extern bool GetMonitorInfo(
+        IntPtr hMonitor,
+        ref MONITORINFO lpmi
+    );
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MONITORINFO
+    {
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
+    }
+
 
     public OverlayWindow(
         SessionTracker sessionTracker,
         string overlayStyle,
-        OverlaySettings settings)
+        OverlaySettings settings,
+        CustomOverlay? customOverlay = null)
     {
         InitializeComponent();
 
         _sessionTracker = sessionTracker;
         _overlayStyle = overlayStyle;
         _settings = settings;
+        _customOverlay = customOverlay;
 
         UpdateSession();
         SetOverlayStyle(_overlayStyle);
@@ -86,7 +123,7 @@ public partial class OverlayWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        UpdateRocketLeagueMonitor(
+        UpdateScreenBounds(
             forceUpdate: true
         );
 
@@ -138,6 +175,15 @@ public partial class OverlayWindow : Window
         OverlayPositionContainer.Margin =
             new Thickness(margin);
 
+        // Décalage fin relatif à la position d'ancrage choisie.
+        // X positif = vers la droite, X négatif = vers la gauche.
+        // Y positif = vers le bas, Y négatif = vers le haut.
+        OverlayPositionTransform.X =
+            _settings.OffsetX;
+
+        OverlayPositionTransform.Y =
+            _settings.OffsetY;
+
         switch (_settings.Position)
         {
             case OverlayPosition.TopLeft:
@@ -178,6 +224,20 @@ public partial class OverlayWindow : Window
 
                 OverlayPositionContainer.RenderTransformOrigin =
                     new Point(1, 0);
+
+                break;
+
+
+            case OverlayPosition.Center:
+
+                OverlayPositionContainer.HorizontalAlignment =
+                    HorizontalAlignment.Center;
+
+                OverlayPositionContainer.VerticalAlignment =
+                    VerticalAlignment.Center;
+
+                OverlayPositionContainer.RenderTransformOrigin =
+                    new Point(0.5, 0.5);
 
                 break;
 
@@ -294,6 +354,9 @@ public partial class OverlayWindow : Window
             _settings.ShowStreak
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+
+        if (_customOverlay != null)
+            RenderCustomOverlay();
     }
 
 
@@ -345,26 +408,84 @@ public partial class OverlayWindow : Window
         object? sender,
         EventArgs e)
     {
-        UpdateRocketLeagueMonitor();
-
+        UpdateScreenBounds();
         UpdateOverlayVisibility();
     }
 
 
-    private void UpdateRocketLeagueMonitor(
+    private void UpdateScreenBounds(
         bool forceUpdate = false)
     {
-        Rect? monitor =
-            RocketLeagueWindowService
-                .GetRocketLeagueMonitorBounds();
-
-        if (monitor == null)
+        if (!IsLoaded)
             return;
+
+        IntPtr handle =
+            new WindowInteropHelper(this).Handle;
+
+        if (handle == IntPtr.Zero)
+            return;
+
+        IntPtr monitorHandle =
+            MonitorFromWindow(
+                handle,
+                MONITOR_DEFAULTTONEAREST
+            );
+
+        if (monitorHandle == IntPtr.Zero)
+            return;
+
+        MONITORINFO monitorInfo =
+            new()
+            {
+                cbSize =
+                    Marshal.SizeOf<MONITORINFO>()
+            };
+
+        if (!GetMonitorInfo(
+            monitorHandle,
+            ref monitorInfo
+        ))
+        {
+            return;
+        }
+
+        // Win32 donne des pixels physiques. WPF travaille en DIP.
+        // On convertit donc les coordonnées de l'écran vers les unités WPF
+        // pour que les coins restent exacts, même avec un scaling Windows.
+        var source =
+            PresentationSource.FromVisual(this);
+
+        Matrix fromDevice =
+            source?.CompositionTarget?.TransformFromDevice
+            ?? Matrix.Identity;
+
+        Point topLeft =
+            fromDevice.Transform(
+                new Point(
+                    monitorInfo.rcMonitor.Left,
+                    monitorInfo.rcMonitor.Top
+                )
+            );
+
+        Point bottomRight =
+            fromDevice.Transform(
+                new Point(
+                    monitorInfo.rcMonitor.Right,
+                    monitorInfo.rcMonitor.Bottom
+                )
+            );
+
+        Rect monitor =
+            new(
+                topLeft.X,
+                topLeft.Y,
+                bottomRight.X - topLeft.X,
+                bottomRight.Y - topLeft.Y
+            );
 
         if (!forceUpdate &&
             _lastRocketLeagueMonitor != null &&
-            _lastRocketLeagueMonitor.Value ==
-            monitor.Value)
+            _lastRocketLeagueMonitor.Value == monitor)
         {
             return;
         }
@@ -373,7 +494,7 @@ public partial class OverlayWindow : Window
             monitor;
 
         ApplyMonitorBounds(
-            monitor.Value
+            monitor
         );
     }
 
@@ -403,18 +524,16 @@ public partial class OverlayWindow : Window
 
     private void UpdateOverlayVisibility()
     {
-        bool shouldShow =
-            RocketLeagueWindowService
-                .ShouldShowOverlay();
+        bool dashRlFocused =
+            Application.Current.MainWindow?.IsActive == true;
 
-        if (shouldShow)
-        {
+        bool rocketLeagueFocused =
+            RocketLeagueWindowService.ShouldShowOverlay();
+
+        if (dashRlFocused || rocketLeagueFocused)
             ShowOverlay();
-        }
         else
-        {
             HideOverlay();
-        }
     }
 
 
@@ -480,6 +599,9 @@ public partial class OverlayWindow : Window
         PillOverlay.Visibility =
             Visibility.Collapsed;
 
+        CustomOverlayCanvas.Visibility =
+            Visibility.Collapsed;
+
 
         switch (_overlayStyle)
         {
@@ -503,6 +625,19 @@ public partial class OverlayWindow : Window
 
                 PillOverlay.Visibility =
                     Visibility.Visible;
+
+                break;
+
+
+            case "Custom":
+
+                if (_customOverlay != null)
+                {
+                    CustomOverlayCanvas.Visibility =
+                        Visibility.Visible;
+
+                    RenderCustomOverlay();
+                }
 
                 break;
 
@@ -620,6 +755,299 @@ public partial class OverlayWindow : Window
 
         PillStreak.Foreground =
             streakColor;
+
+        if (_customOverlay != null)
+            RenderCustomOverlay();
+    }
+
+
+    // ================================================================
+    // CUSTOM OVERLAY
+    // ================================================================
+
+    public void SetCustomOverlay(
+        CustomOverlay overlay)
+    {
+        _customOverlay = overlay;
+        _overlayStyle = "Custom";
+
+        SetOverlayStyle(
+            "Custom"
+        );
+    }
+
+
+    private void RenderCustomOverlay()
+    {
+        if (
+            CustomOverlayCanvas == null ||
+            _customOverlay == null
+        )
+        {
+            return;
+        }
+
+        CustomOverlayCanvas.Children.Clear();
+
+        // En jeu, on positionne la zone réellement occupée par les éléments
+        // et non les 500x150 px complets du canvas de l'éditeur.
+        // Ainsi TopRight / BottomRight / BottomLeft, etc. collent bien
+        // l'overlay visible au coin choisi.
+        double minX = 0;
+        double minY = 0;
+        double maxX = 1;
+        double maxY = 1;
+
+        if (_customOverlay.Elements.Count > 0)
+        {
+            minX =
+                _customOverlay.Elements.Min(
+                    element => element.X
+                );
+
+            minY =
+                _customOverlay.Elements.Min(
+                    element => element.Y
+                );
+
+            maxX =
+                _customOverlay.Elements.Max(
+                    element =>
+                        element.X +
+                        Math.Max(
+                            1,
+                            element.Width
+                        )
+                );
+
+            maxY =
+                _customOverlay.Elements.Max(
+                    element =>
+                        element.Y +
+                        Math.Max(
+                            1,
+                            element.Height
+                        )
+                );
+        }
+
+        CustomOverlayCanvas.Width =
+            Math.Max(
+                1,
+                maxX - minX
+            );
+
+        CustomOverlayCanvas.Height =
+            Math.Max(
+                1,
+                maxY - minY
+            );
+
+        foreach (
+            CustomOverlayElement element
+            in _customOverlay.Elements
+        )
+        {
+            if (
+                element.Type == CustomOverlayElementType.Wins &&
+                !_settings.ShowWins
+            )
+            {
+                continue;
+            }
+
+            if (
+                element.Type == CustomOverlayElementType.Losses &&
+                !_settings.ShowLosses
+            )
+            {
+                continue;
+            }
+
+            if (
+                element.Type == CustomOverlayElementType.Streak &&
+                !_settings.ShowStreak
+            )
+            {
+                continue;
+            }
+
+            FrameworkElement visual =
+                CreateCustomOverlayVisual(
+                    element
+                );
+
+            Canvas.SetLeft(
+                visual,
+                element.X - minX
+            );
+
+            Canvas.SetTop(
+                visual,
+                element.Y - minY
+            );
+
+            CustomOverlayCanvas
+                .Children
+                .Add(
+                    visual
+                );
+        }
+    }
+
+
+    private FrameworkElement CreateCustomOverlayVisual(
+        CustomOverlayElement element)
+    {
+        Border border =
+            new()
+            {
+                Width =
+                    Math.Max(
+                        1,
+                        element.Width
+                    ),
+                Height =
+                    Math.Max(
+                        1,
+                        element.Height
+                    ),
+                Opacity =
+                    Math.Clamp(
+                        element.Opacity,
+                        0,
+                        1
+                    ),
+                Background =
+                    GetCustomBrush(
+                        element.BackgroundColor
+                    ),
+                BorderBrush =
+                    GetCustomBrush(
+                        element.BorderColor
+                    ),
+                BorderThickness =
+                    new Thickness(
+                        Math.Max(
+                            0,
+                            element.BorderThickness
+                        )
+                    ),
+                CornerRadius =
+                    new CornerRadius(
+                        Math.Max(
+                            0,
+                            element.CornerRadius
+                        )
+                    )
+            };
+
+        if (
+            element.Type ==
+            CustomOverlayElementType.Container
+        )
+        {
+            return border;
+        }
+
+        TextBlock text =
+            new()
+            {
+                Text =
+                    GetCustomOverlayText(
+                        element
+                    ),
+                Foreground =
+                    GetCustomBrush(
+                        element.TextColor,
+                        Brushes.White
+                    ),
+                FontSize =
+                    Math.Max(
+                        1,
+                        element.FontSize
+                    ),
+                FontWeight =
+                    element.Bold
+                        ? FontWeights.Bold
+                        : FontWeights.Normal,
+                HorizontalAlignment =
+                    HorizontalAlignment.Center,
+                VerticalAlignment =
+                    VerticalAlignment.Center,
+                TextAlignment =
+                    TextAlignment.Center,
+                TextWrapping =
+                    TextWrapping.Wrap
+            };
+
+        border.Child =
+            text;
+
+        return border;
+    }
+
+
+    private string GetCustomOverlayText(
+        CustomOverlayElement element)
+    {
+        return element.Type switch
+        {
+            CustomOverlayElementType.Wins =>
+                $"{_sessionTracker.Wins} W",
+
+            CustomOverlayElementType.Losses =>
+                $"{_sessionTracker.Losses} L",
+
+            CustomOverlayElementType.Streak =>
+                _sessionTracker.Streak > 0
+                    ? $"+{_sessionTracker.Streak}"
+                    : _sessionTracker.Streak.ToString(),
+
+            CustomOverlayElementType.Text =>
+                element.Text ?? string.Empty,
+
+            _ =>
+                string.Empty
+        };
+    }
+
+
+    private static Brush GetCustomBrush(
+        string? color,
+        Brush? fallback = null)
+    {
+        fallback ??=
+            Brushes.Transparent;
+
+        if (
+            string.IsNullOrWhiteSpace(
+                color
+            )
+        )
+        {
+            return fallback;
+        }
+
+        try
+        {
+            object? converted =
+                ColorConverter.ConvertFromString(
+                    color
+                );
+
+            if (converted is Color parsedColor)
+            {
+                return new SolidColorBrush(
+                    parsedColor
+                );
+            }
+        }
+        catch
+        {
+        }
+
+        return fallback;
     }
 
 
