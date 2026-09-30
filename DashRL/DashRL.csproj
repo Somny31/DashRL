@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+
+    <ApplicationIcon>Assets\DashRL.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
