@@ -27,10 +27,25 @@
               Margin="15">
 
             <Grid.RenderTransform>
-                <ScaleTransform x:Name="OverlayScaleTransform"
-                                ScaleX="1"
-                                ScaleY="1"/>
+                <TransformGroup>
+                    <ScaleTransform x:Name="OverlayScaleTransform"
+                                    ScaleX="1"
+                                    ScaleY="1"/>
+                    <TranslateTransform x:Name="OverlayPositionTransform"
+                                        X="0"
+                                        Y="0"/>
+                </TransformGroup>
             </Grid.RenderTransform>
+
+                <!-- CUSTOM OVERLAY -->
+                <Canvas x:Name="CustomOverlayCanvas"
+                        Visibility="Collapsed"
+                        Width="500"
+                        Height="150"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Background="Transparent"/>
+
 
 
             <!-- ================================================= -->

@@ -769,26 +769,6 @@
                                 </StackPanel>
                             </Button>
 
-                            <Button Style="{StaticResource MenuButtonStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Path Width="17" Height="17" Margin="0,0,11,0" Stretch="Uniform"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                          StrokeThickness="1.7" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
-                                          Data="M4,20 L4,14 M10,20 L10,9 M16,20 L16,4 M22,20 L2,20"/>
-                                    <TextBlock Text="Statistiques" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Style="{StaticResource MenuButtonStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <Path Width="17" Height="17" Margin="0,0,11,0" Stretch="Uniform"
-                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                          StrokeThickness="1.7" StrokeLineJoin="Round"
-                                          Data="M12,8 A4,4 0 1 0 12,16 A4,4 0 1 0 12,8 M19.4,15 A1.7,1.7 0 0 0 19.7,16.9 L19.8,17 A2,2 0 0 1 17,19.8 L16.9,19.7 A1.7,1.7 0 0 0 15,19.4 A1.7,1.7 0 0 0 14,21 L14,21.1 A2,2 0 0 1 10,21.1 L10,21 A1.7,1.7 0 0 0 9,19.4 A1.7,1.7 0 0 0 7.1,19.7 L7,19.8 A2,2 0 0 1 4.2,17 L4.3,16.9 A1.7,1.7 0 0 0 4.6,15 A1.7,1.7 0 0 0 3,14 L2.9,14 A2,2 0 0 1 2.9,10 L3,10 A1.7,1.7 0 0 0 4.6,9 A1.7,1.7 0 0 0 4.3,7.1 L4.2,7 A2,2 0 0 1 7,4.2 L7.1,4.3 A1.7,1.7 0 0 0 9,4.6 A1.7,1.7 0 0 0 10,3 L10,2.9 A2,2 0 0 1 14,2.9 L14,3 A1.7,1.7 0 0 0 15,4.6 A1.7,1.7 0 0 0 16.9,4.3 L17,4.2 A2,2 0 0 1 19.8,7 L19.7,7.1 A1.7,1.7 0 0 0 19.4,9 A1.7,1.7 0 0 0 21,10 L21.1,10 A2,2 0 0 1 21.1,14 L21,14 A1.7,1.7 0 0 0 19.4,15 Z"/>
-                                    <TextBlock Text="Paramètres" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
                         </StackPanel>
 
 
@@ -1274,98 +1254,246 @@
                            Margin="0,5,0,20"/>
 
 
-                <UniformGrid Columns="4">
+                <UniformGrid Columns="5">
 
 
-                    <!-- MINIMAL -->
+    <!-- MINIMAL -->
 
-                    <Button x:Name="MinimalPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="MinimalPresetButton_Click">
+    <Button x:Name="MinimalPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="MinimalPresetButton_Click">
 
-                        <StackPanel>
+        <StackPanel>
 
-                            <TextBlock Text="Minimal"
+            <TextBlock Text="Minimal"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Simple et discret"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+    <!-- COMPETITIVE -->
+
+    <Button x:Name="CompetitivePresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="CompetitivePresetButton_Click">
+
+        <StackPanel>
+
+            <TextBlock Text="Competitive"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Style esport"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+    <!-- CARDS -->
+
+    <Button x:Name="CardsPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="CardsPresetButton_Click">
+
+        <StackPanel>
+
+            <TextBlock Text="Cards"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Blocs séparés"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+    <!-- PILL -->
+
+    <Button x:Name="PillPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="PillPresetButton_Click">
+
+        <StackPanel>
+
+            <TextBlock Text="Pill"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Compact et moderne"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+    <!-- CUSTOM -->
+
+    <Grid Margin="0">
+
+        <Button x:Name="CustomOverlayMenuButton"
+                Style="{StaticResource PresetButtonStyle}"
+                Margin="0"
+                Click="CustomOverlayMenuButton_Click">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+
+                    <TextBlock Text="Custom"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#A89CFF"/>
+
+                    <TextBlock x:Name="CustomOverlayMenuSubtitle"
+                               Text="Overlays personnalisés"
+                               Foreground="#737A89"
+                               FontSize="11"
+                               Margin="0,5,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="⌄"
+                           Foreground="#8C93A3"
+                           FontSize="17"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </Button>
+
+
+        <Popup x:Name="CustomOverlayPopup"
+               PlacementTarget="{Binding ElementName=CustomOverlayMenuButton}"
+               Placement="Bottom"
+               StaysOpen="False"
+               AllowsTransparency="True"
+               PopupAnimation="Fade"
+               HorizontalOffset="0"
+               VerticalOffset="6">
+
+            <Border Width="235"
+                    MaxHeight="360"
+                    Background="#11141B"
+                    BorderBrush="#292E3A"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="8">
+
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20"
+                                      ShadowDepth="5"
+                                      Opacity="0.35"
+                                      Color="#000000"/>
+                </Border.Effect>
+
+                <StackPanel>
+
+                    <TextBlock Text="MES OVERLAYS"
+                               Foreground="#737A89"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Margin="8,5,8,7"/>
+
+                    <ScrollViewer MaxHeight="210"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+
+                        <StackPanel x:Name="CustomOverlaysMenuPanel"/>
+
+                    </ScrollViewer>
+
+                    <Border Height="1"
+                            Background="#252A35"
+                            Margin="4,7"/>
+
+                    <Button Height="38"
+                            Padding="10,0"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#D8DBE3"
+                            Cursor="Hand"
+                            Click="OpenCustomOverlaysFolderButton_Click">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="📁"
                                        FontSize="14"
-                                       FontWeight="SemiBold"/>
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,9,0"/>
 
-                            <TextBlock Text="Simple et discret"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
+                            <TextBlock Text="Dossier"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
 
                         </StackPanel>
 
                     </Button>
 
+                    <Button Height="38"
+                            Padding="10,0"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="#A89CFF"
+                            Cursor="Hand"
+                            Click="CreateCustomOverlayButton_Click">
 
-                    <!-- COMPETITIVE -->
+                        <StackPanel Orientation="Horizontal">
 
-                    <Button x:Name="CompetitivePresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="CompetitivePresetButton_Click">
+                            <TextBlock Text="+"
+                                       FontSize="18"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Margin="0,-1,9,0"/>
 
-                        <StackPanel>
-
-                            <TextBlock Text="Competitive"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
-
-                            <TextBlock Text="Style esport"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
-
-                        </StackPanel>
-
-                    </Button>
-
-
-                    <!-- CARDS -->
-
-                    <Button x:Name="CardsPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="CardsPresetButton_Click">
-
-                        <StackPanel>
-
-                            <TextBlock Text="Cards"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
-
-                            <TextBlock Text="Blocs séparés"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
+                            <TextBlock Text="Créer son overlay"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
 
                         </StackPanel>
 
                     </Button>
 
+                </StackPanel>
 
-                    <!-- PILL -->
+            </Border>
 
-                    <Button x:Name="PillPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Margin="0"
-                            Click="PillPresetButton_Click">
+        </Popup>
 
-                        <StackPanel>
+    </Grid>
 
-                            <TextBlock Text="Pill"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
 
-                            <TextBlock Text="Compact et moderne"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
-
-                        </StackPanel>
-
-                    </Button>
-
-                </UniformGrid>
+</UniformGrid>
 
             </StackPanel>
 
@@ -1432,6 +1560,7 @@
                     <Grid>
 
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
@@ -1503,10 +1632,32 @@
                                 Click="OverlayPositionButton_Click"/>
 
 
+
+
+                        <!-- CENTER -->
+
+                        <Button x:Name="CenterPositionButton"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Tag="Center"
+                                Content="●"
+                                Width="46"
+                                Height="36"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Background="#171A22"
+                                Foreground="#D8DBE2"
+                                BorderBrush="#2A2F3A"
+                                BorderThickness="1"
+                                FontSize="13"
+                                Cursor="Hand"
+                                Click="OverlayPositionButton_Click"/>
+
+
                         <!-- BOTTOM LEFT -->
 
                         <Button x:Name="BottomLeftPositionButton"
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="0"
                                 Tag="BottomLeft"
                                 Content="↙"
@@ -1526,7 +1677,7 @@
                         <!-- BOTTOM CENTER -->
 
                         <Button x:Name="BottomCenterPositionButton"
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="1"
                                 Tag="BottomCenter"
                                 Content="↓"
@@ -1546,7 +1697,7 @@
                         <!-- BOTTOM RIGHT -->
 
                         <Button x:Name="BottomRightPositionButton"
-                                Grid.Row="1"
+                                Grid.Row="2"
                                 Grid.Column="2"
                                 Tag="BottomRight"
                                 Content="↘"
@@ -1565,6 +1716,127 @@
                     </Grid>
 
                 </Border>
+
+
+                <!-- ================================================= -->
+                <!-- DÉCALAGE FIN X / Y -->
+                <!-- ================================================= -->
+
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Décalage X"
+                               Foreground="#D5D8DF"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
+                    <Border Grid.Column="1"
+                            Background="#11141B"
+                            BorderBrush="#303644"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Margin="8,0,8,0"
+                            Padding="0">
+                        <Grid>
+                            <TextBox x:Name="OffsetXTextBox"
+                                     Text="0"
+                                     Width="70"
+                                     Height="28"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Foreground="#F1F2F5"
+                                     CaretBrush="White"
+                                     FontSize="12"
+                                     TextAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     KeyDown="OffsetXTextBox_KeyDown"
+                                     LostFocus="OffsetXTextBox_LostFocus"/>
+                        </Grid>
+                    </Border>
+
+                    <Button Grid.Column="2"
+                            x:Name="ResetOffsetXButton"
+                            Content="Reset"
+                            Height="28"
+                            Padding="10,0"
+                            Background="#171A22"
+                            Foreground="#D8DBE2"
+                            BorderBrush="#303644"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            Click="ResetOffsetXButton_Click"/>
+                </Grid>
+
+                <Slider x:Name="OverlayOffsetXSlider"
+                        Minimum="-1000"
+                        Maximum="1000"
+                        Value="0"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Margin="0,0,0,18"
+                        ValueChanged="OverlayOffsetXSlider_ValueChanged"/>
+
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Décalage Y"
+                               Foreground="#D5D8DF"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+
+                    <Border Grid.Column="1"
+                            Background="#11141B"
+                            BorderBrush="#303644"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Margin="8,0,8,0"
+                            Padding="0">
+                        <TextBox x:Name="OffsetYTextBox"
+                                 Text="0"
+                                 Width="70"
+                                 Height="28"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Foreground="#F1F2F5"
+                                 CaretBrush="White"
+                                 FontSize="12"
+                                 TextAlignment="Center"
+                                 VerticalContentAlignment="Center"
+                                 KeyDown="OffsetYTextBox_KeyDown"
+                                 LostFocus="OffsetYTextBox_LostFocus"/>
+                    </Border>
+
+                    <Button Grid.Column="2"
+                            x:Name="ResetOffsetYButton"
+                            Content="Reset"
+                            Height="28"
+                            Padding="10,0"
+                            Background="#171A22"
+                            Foreground="#D8DBE2"
+                            BorderBrush="#303644"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            Click="ResetOffsetYButton_Click"/>
+                </Grid>
+
+                <Slider x:Name="OverlayOffsetYSlider"
+                        Minimum="-1000"
+                        Maximum="1000"
+                        Value="0"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        Margin="0,0,0,27"
+                        ValueChanged="OverlayOffsetYSlider_ValueChanged"/>
 
 
                 <!-- ================================================= -->

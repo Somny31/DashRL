@@ -1,5 +1,7 @@
-bin/
-bin/Debug/
-obj/
-Installer/
-.vs/
+DashRL/bin/
+DashRL/obj/
+DashRL/publish/
+DashRL/Installer/
+DashRL/.vs/
+
+DashRL/DashRL.iss

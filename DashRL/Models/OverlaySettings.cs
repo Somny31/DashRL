@@ -7,6 +7,7 @@ public enum OverlayPosition
     TopLeft,
     TopCenter,
     TopRight,
+    Center,
     BottomLeft,
     BottomCenter,
     BottomRight
@@ -14,9 +15,11 @@ public enum OverlayPosition
 
 public class OverlaySettings
 {
-    private OverlayPosition _position = OverlayPosition.TopCenter;
+    private OverlayPosition _position = OverlayPosition.Center;
     private double _scale = 1.0;
     private double _opacity = 1.0;
+    private double _offsetX = 0;
+    private double _offsetY = 0;
     private bool _showWins = true;
     private bool _showLosses = true;
     private bool _showStreak = true;
@@ -63,6 +66,36 @@ public class OverlaySettings
                 return;
 
             _opacity = newValue;
+            SettingsChanged?.Invoke();
+        }
+    }
+
+    public double OffsetX
+    {
+        get => _offsetX;
+        set
+        {
+            double newValue = Math.Clamp(value, -1000, 1000);
+
+            if (Math.Abs(_offsetX - newValue) < 0.001)
+                return;
+
+            _offsetX = newValue;
+            SettingsChanged?.Invoke();
+        }
+    }
+
+    public double OffsetY
+    {
+        get => _offsetY;
+        set
+        {
+            double newValue = Math.Clamp(value, -1000, 1000);
+
+            if (Math.Abs(_offsetY - newValue) < 0.001)
+                return;
+
+            _offsetY = newValue;
             SettingsChanged?.Invoke();
         }
     }
@@ -121,9 +154,11 @@ public class OverlaySettings
 
     public void Reset()
     {
-        _position = OverlayPosition.TopCenter;
+        _position = OverlayPosition.Center;
         _scale = 1.0;
         _opacity = 1.0;
+        _offsetX = 0;
+        _offsetY = 0;
         _showWins = true;
         _showLosses = true;
         _showStreak = true;
