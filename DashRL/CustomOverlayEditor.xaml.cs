@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using DashRL.Models;
@@ -15,10 +17,13 @@ public partial class CustomOverlayEditor : Window
     private FrameworkElement? _selectedVisual;
 
     private bool _isDragging;
-    private Point _dragStart;
-    private double _elementStartX;
-    private double _elementStartY;
+private Point _dragStart;
+private double _elementStartX;
+private double _elementStartY;
 
+private bool _isUpdatingProperties;
+private readonly Dictionary<FrameworkElement, SelectionAdorner>
+    _selectionAdorners = new();
 
     // ================================================================
     // CONSTRUCTOR
@@ -52,8 +57,35 @@ public partial class CustomOverlayEditor : Window
             AddTextButton_Click;
 
         AddContainerButton.Click +=
-            AddContainerButton_Click;
-    }
+    AddContainerButton_Click;
+
+
+// Mise à jour des propriétés de l'élément sélectionné.
+
+PositionXTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+PositionYTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+WidthTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+HeightTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+ElementTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+FontSizeTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+TextColorTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+
+BackgroundColorTextBox.TextChanged +=
+    PropertyTextBox_TextChanged;
+}
 
 
     // ================================================================
@@ -255,6 +287,7 @@ public partial class CustomOverlayEditor : Window
 
     private void RenderOverlay()
     {
+        ClearSelectionAdorners();
         OverlayCanvas.Children.Clear();
 
         foreach (
@@ -292,6 +325,9 @@ public partial class CustomOverlayEditor : Window
                 visual
             );
         }
+        Dispatcher.BeginInvoke(
+    () => UpdateSelectionAdorners()
+);
     }
 
 
@@ -471,13 +507,47 @@ public partial class CustomOverlayEditor : Window
 
 
         UpdatePropertiesPanel();
+        UpdateSelectionAdorners();
     }
 
 
     private void UpdatePropertiesPanel()
+{
+    if (_selectedElement == null)
     {
-        if (_selectedElement == null)
-            return;
+        SelectedElementText.Text =
+            "No element selected";
+
+        return;
+    }
+
+    UpdatePropertiesVisibility();
+
+    _isUpdatingProperties = true;
+
+    try
+    {
+        SelectedElementText.Text =
+            _selectedElement.Type switch
+            {
+                CustomOverlayElementType.Wins =>
+                    "Wins",
+
+                CustomOverlayElementType.Losses =>
+                    "Losses",
+
+                CustomOverlayElementType.Streak =>
+                    "Streak",
+
+                CustomOverlayElementType.Text =>
+                    "Text",
+
+                CustomOverlayElementType.Container =>
+                    "Container",
+
+                _ =>
+                    "Element"
+            };
 
 
         PositionXTextBox.Text =
@@ -505,20 +575,373 @@ public partial class CustomOverlayEditor : Window
         ElementTextBox.Text =
             _selectedElement.Text;
 
+
         FontSizeTextBox.Text =
             _selectedElement
                 .FontSize
                 .ToString();
 
+
         TextColorTextBox.Text =
-            _selectedElement
-                .TextColor;
+            _selectedElement.TextColor;
 
         BackgroundColorTextBox.Text =
-            _selectedElement
-                .BackgroundColor;
+            _selectedElement.BackgroundColor;
+    }
+    finally
+    {
+        _isUpdatingProperties = false;
+    }
+}
+
+private void UpdatePropertiesVisibility()
+{
+    if (_selectedElement == null)
+        return;
+
+
+    bool isText =
+        _selectedElement.Type ==
+        CustomOverlayElementType.Text;
+
+    bool isContainer =
+        _selectedElement.Type ==
+        CustomOverlayElementType.Container;
+
+
+    // Seul un véritable élément Text
+    // peut modifier son contenu.
+
+    TextPropertyPanel.Visibility =
+        isText
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+
+
+    // Le Font Size est disponible sur tous
+    // les éléments texte, sauf Container.
+
+    FontSizePropertyPanel.Visibility =
+    isContainer
+        ? Visibility.Collapsed
+        : Visibility.Visible;
+
+
+TextColorPropertyPanel.Visibility =
+    isContainer
+        ? Visibility.Collapsed
+        : Visibility.Visible;
+}
+
+// ================================================================
+// PROPERTIES
+// ================================================================
+
+private void PropertyTextBox_TextChanged(
+    object sender,
+    TextChangedEventArgs e)
+{
+    if (_isUpdatingProperties ||
+        _selectedElement == null)
+    {
+        return;
     }
 
+
+    CustomOverlayElement element =
+        _selectedElement;
+
+
+    // POSITION X
+
+    if (!string.IsNullOrWhiteSpace(
+            PositionXTextBox.Text) &&
+        double.TryParse(
+            PositionXTextBox.Text,
+            out double x))
+    {
+        element.X =
+            Math.Clamp(
+                x,
+                0,
+                Math.Max(
+                    0,
+                    OverlayCanvas.Width -
+                    element.Width
+                )
+            );
+    }
+
+
+    // POSITION Y
+
+    if (!string.IsNullOrWhiteSpace(
+            PositionYTextBox.Text) &&
+        double.TryParse(
+            PositionYTextBox.Text,
+            out double y))
+    {
+        element.Y =
+            Math.Clamp(
+                y,
+                0,
+                Math.Max(
+                    0,
+                    OverlayCanvas.Height -
+                    element.Height
+                )
+            );
+    }
+
+
+    // WIDTH
+
+    if (!string.IsNullOrWhiteSpace(
+            WidthTextBox.Text) &&
+        double.TryParse(
+            WidthTextBox.Text,
+            out double width))
+    {
+        element.Width =
+            Math.Clamp(
+                width,
+                10,
+                OverlayCanvas.Width
+            );
+    }
+
+
+    // HEIGHT
+
+    if (!string.IsNullOrWhiteSpace(
+            HeightTextBox.Text) &&
+        double.TryParse(
+            HeightTextBox.Text,
+            out double height))
+    {
+        element.Height =
+            Math.Clamp(
+                height,
+                10,
+                OverlayCanvas.Height
+            );
+    }
+
+
+    // FONT SIZE
+
+    if (!string.IsNullOrWhiteSpace(
+            FontSizeTextBox.Text) &&
+        double.TryParse(
+            FontSizeTextBox.Text,
+            out double fontSize))
+    {
+        element.FontSize =
+            Math.Clamp(
+                fontSize,
+                6,
+                100
+            );
+    }
+
+
+    // TEXT
+
+    element.Text =
+        ElementTextBox.Text;
+
+
+    // TEXT COLOR
+
+    if (IsValidColor(
+            TextColorTextBox.Text))
+    {
+        element.TextColor =
+            TextColorTextBox.Text;
+    }
+
+
+    // BACKGROUND COLOR
+
+    if (IsValidColor(
+            BackgroundColorTextBox.Text))
+    {
+        element.BackgroundColor =
+            BackgroundColorTextBox.Text;
+    }
+
+
+    UpdateSelectedVisual();
+}
+
+
+private static bool IsValidColor(
+    string color)
+{
+    try
+    {
+        object? converted =
+            ColorConverter.ConvertFromString(
+                color
+            );
+
+        return converted is Color;
+    }
+    catch
+    {
+        return false;
+    }
+}
+
+private void UpdateSelectedVisual()
+{
+    if (_selectedElement == null ||
+        _selectedVisual == null)
+    {
+        return;
+    }
+
+
+    CustomOverlayElement element =
+        _selectedElement;
+
+
+    _selectedVisual.Width =
+        element.Width;
+
+    _selectedVisual.Height =
+        element.Height;
+
+
+    Canvas.SetLeft(
+        _selectedVisual,
+        element.X
+    );
+
+    Canvas.SetTop(
+        _selectedVisual,
+        element.Y
+    );
+
+
+    _selectedVisual.Opacity =
+        element.Opacity;
+
+
+    if (_selectedVisual is not Border border)
+        return;
+
+
+    border.Background =
+        GetBrush(
+            element.BackgroundColor
+        );
+
+    border.BorderBrush =
+        GetBrush(
+            element.BorderColor
+        );
+
+    border.BorderThickness =
+        new Thickness(
+            element.BorderThickness
+        );
+
+    border.CornerRadius =
+        new CornerRadius(
+            element.CornerRadius
+        );
+
+
+    if (border.Child is not TextBlock text)
+        return;
+
+
+    text.Text =
+        GetDisplayText(
+            element
+        );
+
+    text.FontSize =
+        element.FontSize;
+
+    text.Foreground =
+        GetBrush(
+            element.TextColor
+        );
+
+    text.FontWeight =
+        element.Bold
+            ? FontWeights.Bold
+            : FontWeights.Normal;
+}
+
+// ================================================================
+// SELECTION VISUAL
+// ================================================================
+
+private void UpdateSelectionAdorners()
+{
+    ClearSelectionAdorners();
+
+
+    foreach (UIElement child in OverlayCanvas.Children)
+    {
+        if (child is not FrameworkElement visual)
+            continue;
+
+        AdornerLayer? layer =
+            AdornerLayer.GetAdornerLayer(
+                visual
+            );
+
+        if (layer == null)
+            continue;
+
+
+        bool isSelected =
+            ReferenceEquals(
+                visual,
+                _selectedVisual
+            );
+
+
+        SelectionAdorner adorner =
+            new(
+                visual,
+                isSelected
+            );
+
+
+        layer.Add(
+            adorner
+        );
+
+        _selectionAdorners[visual] =
+            adorner;
+    }
+}
+
+
+private void ClearSelectionAdorners()
+{
+    foreach (
+        KeyValuePair<FrameworkElement, SelectionAdorner> item
+        in _selectionAdorners)
+    {
+        AdornerLayer? layer =
+            AdornerLayer.GetAdornerLayer(
+                item.Key
+            );
+
+        layer?.Remove(
+            item.Value
+        );
+    }
+
+
+    _selectionAdorners.Clear();
+}
 
     // ================================================================
     // DRAG
@@ -641,16 +1064,25 @@ public partial class CustomOverlayEditor : Window
         );
 
 
-        PositionXTextBox.Text =
-            Math.Round(
-                newX
-            ).ToString();
+        _isUpdatingProperties = true;
 
-        PositionYTextBox.Text =
-            Math.Round(
-                newY
-            ).ToString();
-    }
+try
+{
+    PositionXTextBox.Text =
+        Math.Round(
+            newX
+        ).ToString();
+
+    PositionYTextBox.Text =
+        Math.Round(
+            newY
+        ).ToString();
+}
+finally
+{
+    _isUpdatingProperties = false;
+}
+}
 
 
     private void Element_MouseLeftButtonUp(
@@ -705,5 +1137,92 @@ public partial class CustomOverlayEditor : Window
 
 
         return Brushes.Transparent;
+    }
+}
+
+internal sealed class SelectionAdorner : Adorner
+{
+    private readonly bool _isSelected;
+
+
+    public SelectionAdorner(
+        UIElement adornedElement,
+        bool isSelected)
+        : base(adornedElement)
+    {
+        _isSelected =
+            isSelected;
+
+        IsHitTestVisible =
+            false;
+    }
+
+
+    protected override void OnRender(
+        DrawingContext drawingContext)
+    {
+        base.OnRender(
+            drawingContext
+        );
+
+
+        Brush brush;
+
+        double thickness;
+
+
+        if (_isSelected)
+        {
+            brush =
+                new SolidColorBrush(
+                    Color.FromRgb(
+                        124,
+                        108,
+                        255
+                    )
+                );
+
+            thickness =
+                2;
+        }
+        else
+        {
+            brush =
+                new SolidColorBrush(
+                    Color.FromArgb(
+                        55,
+                        180,
+                        185,
+                        200
+                    )
+                );
+
+            thickness =
+                1;
+        }
+
+
+        Pen pen =
+            new(
+                brush,
+                thickness
+            );
+
+
+        Rect rectangle =
+            new(
+                new Point(
+                    0,
+                    0
+                ),
+                AdornedElement.RenderSize
+            );
+
+
+        drawingContext.DrawRectangle(
+            null,
+            pen,
+            rectangle
+        );
     }
 }

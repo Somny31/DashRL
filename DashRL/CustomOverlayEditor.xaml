@@ -477,6 +477,7 @@
 
 
                     <TextBlock
+                        x:Name="SelectedElementText"
                         Text="No element selected"
                         Foreground="#A0A6B3"
                         FontSize="12"
@@ -595,44 +596,58 @@
 
                     <!-- TEXT -->
 
-                    <TextBlock
-                        Text="Text"
-                        Foreground="#737A89"
-                        FontSize="10"
-                        FontWeight="SemiBold"
-                        Margin="0,18,0,8"/>
+                    <!-- TEXT -->
 
-                    <TextBox
-                        x:Name="ElementTextBox"
-                        Text=""/>
+<StackPanel x:Name="TextPropertyPanel">
+
+    <TextBlock
+        Text="Text"
+        Foreground="#737A89"
+        FontSize="10"
+        FontWeight="SemiBold"
+        Margin="0,18,0,8"/>
+
+    <TextBox
+        x:Name="ElementTextBox"
+        Text=""/>
+
+</StackPanel>
 
 
                     <!-- FONT SIZE -->
 
-                    <TextBlock
-                        Text="Font size"
-                        Foreground="#737A89"
-                        FontSize="10"
-                        FontWeight="SemiBold"
-                        Margin="0,18,0,8"/>
+<StackPanel x:Name="FontSizePropertyPanel">
 
-                    <TextBox
-                        x:Name="FontSizeTextBox"
-                        Text="18"/>
+    <TextBlock
+        Text="Font size"
+        Foreground="#737A89"
+        FontSize="10"
+        FontWeight="SemiBold"
+        Margin="0,18,0,8"/>
+
+    <TextBox
+        x:Name="FontSizeTextBox"
+        Text="18"/>
+
+</StackPanel>
 
 
                     <!-- COLORS -->
 
-                    <TextBlock
-                        Text="Text color"
-                        Foreground="#737A89"
-                        FontSize="10"
-                        FontWeight="SemiBold"
-                        Margin="0,18,0,8"/>
+                    <StackPanel x:Name="TextColorPropertyPanel">
 
-                    <TextBox
-                        x:Name="TextColorTextBox"
-                        Text="#FFFFFF"/>
+    <TextBlock
+        Text="Text color"
+        Foreground="#737A89"
+        FontSize="10"
+        FontWeight="SemiBold"
+        Margin="0,18,0,8"/>
+
+    <TextBox
+        x:Name="TextColorTextBox"
+        Text="#FFFFFF"/>
+
+</StackPanel>
 
 
                     <TextBlock
