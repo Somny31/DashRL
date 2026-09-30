@@ -1274,98 +1274,122 @@
                            Margin="0,5,0,20"/>
 
 
-                <UniformGrid Columns="4">
+                <UniformGrid Columns="5">
 
 
-                    <!-- MINIMAL -->
+    <!-- MINIMAL -->
 
-                    <Button x:Name="MinimalPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="MinimalPresetButton_Click">
+    <Button x:Name="MinimalPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="MinimalPresetButton_Click">
 
-                        <StackPanel>
+        <StackPanel>
 
-                            <TextBlock Text="Minimal"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
+            <TextBlock Text="Minimal"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
 
-                            <TextBlock Text="Simple et discret"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
+            <TextBlock Text="Simple et discret"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
 
-                        </StackPanel>
+        </StackPanel>
 
-                    </Button>
-
-
-                    <!-- COMPETITIVE -->
-
-                    <Button x:Name="CompetitivePresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="CompetitivePresetButton_Click">
-
-                        <StackPanel>
-
-                            <TextBlock Text="Competitive"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
-
-                            <TextBlock Text="Style esport"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
-
-                        </StackPanel>
-
-                    </Button>
+    </Button>
 
 
-                    <!-- CARDS -->
+    <!-- COMPETITIVE -->
 
-                    <Button x:Name="CardsPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Click="CardsPresetButton_Click">
+    <Button x:Name="CompetitivePresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="CompetitivePresetButton_Click">
 
-                        <StackPanel>
+        <StackPanel>
 
-                            <TextBlock Text="Cards"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
+            <TextBlock Text="Competitive"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
 
-                            <TextBlock Text="Blocs séparés"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
+            <TextBlock Text="Style esport"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
 
-                        </StackPanel>
+        </StackPanel>
 
-                    </Button>
+    </Button>
 
 
-                    <!-- PILL -->
+    <!-- CARDS -->
 
-                    <Button x:Name="PillPresetButton"
-                            Style="{StaticResource PresetButtonStyle}"
-                            Margin="0"
-                            Click="PillPresetButton_Click">
+    <Button x:Name="CardsPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="CardsPresetButton_Click">
 
-                        <StackPanel>
+        <StackPanel>
 
-                            <TextBlock Text="Pill"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"/>
+            <TextBlock Text="Cards"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
 
-                            <TextBlock Text="Compact et moderne"
-                                       Foreground="#737A89"
-                                       FontSize="11"
-                                       Margin="0,5,0,0"/>
+            <TextBlock Text="Blocs séparés"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
 
-                        </StackPanel>
+        </StackPanel>
 
-                    </Button>
+    </Button>
 
-                </UniformGrid>
+
+    <!-- PILL -->
+
+    <Button x:Name="PillPresetButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Click="PillPresetButton_Click">
+
+        <StackPanel>
+
+            <TextBlock Text="Pill"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock Text="Compact et moderne"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+    <!-- CUSTOM -->
+
+    <Button x:Name="CustomOverlayEditorButton"
+            Style="{StaticResource PresetButtonStyle}"
+            Margin="0"
+            Click="CustomOverlayEditorButton_Click">
+
+        <StackPanel>
+
+            <TextBlock Text="Custom"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#A89CFF"/>
+
+            <TextBlock Text="Créer ton overlay"
+                       Foreground="#737A89"
+                       FontSize="11"
+                       Margin="0,5,0,0"/>
+
+        </StackPanel>
+
+    </Button>
+
+
+</UniformGrid>
 
             </StackPanel>
 

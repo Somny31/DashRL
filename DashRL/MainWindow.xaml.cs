@@ -457,17 +457,31 @@ public partial class MainWindow : Window
 
 
     private void PillPresetButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        SelectOverlayStyle(
-            "Pill"
-        );
-    }
+    object sender,
+    RoutedEventArgs e)
+{
+    SelectOverlayStyle(
+        "Pill"
+    );
+}
 
 
-    private void SelectOverlayStyle(
-        string style)
+private void CustomOverlayEditorButton_Click(
+    object sender,
+    RoutedEventArgs e)
+{
+    CustomOverlayEditor editor =
+        new()
+        {
+            Owner = this
+        };
+
+    editor.ShowDialog();
+}
+
+
+private void SelectOverlayStyle(
+    string style)
     {
         _selectedOverlayStyle =
             style;
